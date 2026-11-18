@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Super-Study · 打卡</title>
+<style>
+:root{
+  --bg:#0b0e14; --card:#141926; --card2:#1b2233; --line:#252d3f;
+  --text:#e9edf7; --muted:#8b95ab; --accent:#6ea8fe;
+  --good:#4ade80; --warn:#fbbf24; --bad:#f87171;
+  --l0:#1c2333; --l1:#1c4a33; --l2:#226b45; --l3:#2f9a5f; --l4:#48d17f;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:radial-gradient(1100px 520px at 50% -12%, #16203a 0%, var(--bg) 62%);
+  color:var(--text); font:15px/1.65 -apple-system,"Segoe UI","Microsoft YaHei",system-ui,sans-serif;
+  padding:26px 16px 64px;
+}
+.wrap{max-width:900px;margin:0 auto;display:grid;gap:14px}
+header{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:2px}
+h1{font-size:19px;margin:0;letter-spacing:.4px}
+.sub{color:var(--muted);font-size:12.5px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+.row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.between{justify-content:space-between}
+.muted{color:var(--muted)}
+.small{font-size:12.5px}
+.num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+.big{font-size:46px;font-weight:650;letter-spacing:-1px;line-height:1.05}
+.big small{font-size:16px;font-weight:500;color:var(--muted);letter-spacing:0;margin-left:6px}
+.bar{height:10px;background:#1a2130;border-radius:99px;overflow:hidden;border:1px solid var(--line)}
+.bar>i{display:block;height:100%;width:0;background:linear-gradient(90deg,#3b82f6,#4ade80);transition:width .5s ease}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:3px 9px;border-radius:99px;border:1px solid var(--line);color:var(--muted);background:#121826}
+.chip.ok{color:#86efac;border-color:#25633d;background:#0f2419}
+.chip.bad{color:#fca5a5;border-color:#5c2626;background:#241212}
+.btn{
+  border:1px solid var(--line); background:var(--card2); color:var(--text);
+  padding:9px 16px; border-radius:10px; cursor:pointer; font-size:14px; font-family:inherit;
+  transition:filter .15s,transform .05s;
+}
+.btn:hover{filter:brightness(1.15)}
+.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.primary{background:linear-gradient(180deg,#3b82f6,#2563eb);border-color:#2f6fd8;color:#fff;font-weight:600}
+.btn.stop{background:linear-gradient(180deg,#ef4444,#dc2626);border-color:#c02626;color:#fff;font-weight:600}
+.btn.ghost{background:transparent}
+.btn.sm{padding:5px 10px;font-size:12.5px;border-radius:8px}
+.btn.pulse{animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(251,191,36,.5)}50%{box-shadow:0 0 0 8px rgba(251,191,36,0)}}
+.timer{font-size:38px;font-weight:650;font-variant-numeric:tabular-nums;letter-spacing:1px}
+.timer.idle{color:#4d576b}
+.hm-wrap{overflow-x:auto;padding-bottom:4px}
+.hm{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,12px);gap:3px;width:max-content}
+.hm i{width:12px;height:12px;border-radius:3px;background:var(--l0);display:block}
+.hm i.l1{background:var(--l1)} .hm i.l2{background:var(--l2)}
+.hm i.l3{background:var(--l3)} .hm i.l4{background:var(--l4)}
+.hm i.bf{outline:1px dashed #7c8aa5;outline-offset:-1px}
+.legend{display:flex;align-items:center;gap:5px;font-size:11.5px;color:var(--muted)}
+.legend i{width:11px;height:11px;border-radius:3px;display:inline-block;background:var(--l0)}
+details.day{border:1px solid var(--line);border-radius:11px;background:#111725;margin-bottom:8px;overflow:hidden}
+details.day>summary{cursor:pointer;padding:11px 13px;display:flex;gap:12px;align-items:center;list-style:none}
+details.day>summary::-webkit-details-marker{display:none}
+details.day[open]{border-color:#33405a}
+.d-date{font-weight:600;font-variant-numeric:tabular-nums;min-width:96px}
+.d-min{color:var(--good);font-variant-numeric:tabular-nums;min-width:58px}
+.d-note{color:var(--muted);font-size:13px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.d-body{padding:0 13px 13px}
+textarea{
+  width:100%;min-height:78px;background:#0e1420;border:1px solid var(--line);border-radius:9px;
+  color:var(--text);padding:10px;font:14px/1.6 inherit;resize:vertical;
+}
+textarea:focus{outline:none;border-color:#3b6fd4}
+.hint{font-size:12px;color:var(--muted);margin-top:6px}
+input{width:100%;background:#0e1420;border:1px solid var(--line);border-radius:9px;color:var(--text);padding:9px 10px;font:13.5px/1.4 inherit}
+input:focus{outline:none;border-color:#3b6fd4}
+label{display:block;font-size:12.5px;color:var(--muted);margin:10px 0 4px}
+dialog{
+  border:1px solid var(--line);background:var(--card);color:var(--text);
+  border-radius:14px;padding:20px;max-width:460px;width:calc(100% - 32px);
+}
+dialog::backdrop{background:rgba(3,6,12,.72)}
+dialog h3{margin:0 0 12px;font-size:16px}
+.err{color:#fca5a5;font-size:12.5px;min-height:18px;margin-top:8px}
+@media(max-width:560px){ .big{font-size:38px} .timer{font-size:32px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+      <h1>Super-Study · 打卡</h1>
+      <div class="sub">2026-11-18 → 2033-11-18 ｜ 每天 30 分钟</div>
+    </div>
+    <div class="row">
+      <span id="dirtyChip" class="chip">已保存</span>
+      <button class="btn sm" id="btnLock">🔒 未加密</button>
+      <button class="btn sm" id="btnSave" title="下载带数据的 HTML，替换原文件后 push">保存到文件</button>
+    </div>
+  </header>
+
+  <section class="card">
+    <div class="row between">
+      <div>
+        <div class="muted small">总计时长</div>
+        <div class="big num"><span id="totalH">0.0</span><small>小时</small></div>
+      </div>
+      <div style="text-align:right">
+        <div class="muted small">目标 3000 小时</div>
+        <div class="num" id="goalRight" style="font-size:15px">还差 3000.0 小时</div>
+      </div>
+    </div>
+    <div class="bar" style="margin:14px 0 10px"><i id="barFill"></i></div>
+    <div class="row between small muted">
+      <span id="paceLine">—</span>
+      <span id="projLine">—</span>
+    </div>
+    <div class="row" style="margin-top:12px;gap:8px">
+      <span class="chip" id="chipDays">0 天</span>
+      <span class="chip" id="chipStreak">连续 0 天</span>
+      <span class="chip" id="chipBest">最长 0 天</span>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="row between">
+      <div>
+        <div class="muted small" id="todayLabel">今天</div>
+        <div class="timer idle" id="timer">00:00:00</div>
+      </div>
+      <div class="row" style="gap:8px">
+        <button class="btn ghost sm" id="btnBackfill" title="周五六日可补前一天">补卡</button>
+        <button class="btn primary" id="btnIn">签到</button>
+        <button class="btn stop" id="btnOut" disabled>签退</button>
+      </div>
+    </div>
+    <div class="hint" id="ruleHint"></div>
+  </section>
+
+  <section class="card">
+    <div class="row between" style="margin-bottom:12px">
+      <div class="muted small">最近 53 周</div>
+      <div class="legend">
+        <span>少</span><i></i><i style="background:var(--l1)"></i><i style="background:var(--l2)"></i><i style="background:var(--l3)"></i><i style="background:var(--l4)"></i><span>多</span>
+      </div>
+    </div>
+    <div class="hm-wrap"><div class="hm" id="heatmap"></div></div>
+  </section>
+
+  <section class="card">
+    <div class="muted small" style="margin-bottom:10px">记录 · 点开写日记，改完记得保存</div>
+    <div id="list"></div>
+  </section>
+
+  <section class="card small muted">
+    <div class="row between" style="margin-bottom:6px"><b style="color:var(--text)">规则</b></div>
+    <ul style="margin:0;padding-left:18px;line-height:1.9">
+      <li>周一至周四：只能打当天的卡，不给补。</li>
+      <li>周五、周六、周日：可以补前一天，但一次要连续满 <b id="bfMin">60</b> 分钟（30 补昨天 + 30 补今天）。</li>
+      <li>周日缺的那次，周一不补 —— 这是规则本身的意思，不是 bug。</li>
+      <li>一天可以签多次，时长累加；签退时才写入记录。</li>
+      <li>计时器存在浏览器本地，关掉页面明天打开还能接着走。</li>
+    </ul>
+    <div class="row between" style="margin:14px 0 6px"><b style="color:var(--text)">加密</b></div>
+    <ul style="margin:0;padding-left:18px;line-height:1.9">
+      <li>右上角「未加密」可以设密码：<b>时长公开，日记加密</b>。</li>
+      <li>密钥由密码派生（PBKDF2 → AES-GCM），文件里只存盐和密文，不存密码。</li>
+      <li><b>密码忘了就打不开</b>，没有找回。解锁状态下建议定期导出备份。</li>
+      <li>换新密码 = 重新加密一遍，旧密文作废。</li>
+    </ul>
+    <div class="row between" style="margin:14px 0 6px"><b style="color:var(--text)">怎么保存</b></div>
+    <ol style="margin:0;padding-left:18px;line-height:1.9">
+      <li>签退，写日记。</li>
+      <li>右上角点「保存到文件」，会下载一个新的 <code>index.html</code>。</li>
+      <li>用它覆盖仓库里的 <code>index.html</code>，然后 push。</li>
+    </ol>
+    <div class="hint">不点保存也不会丢：数据同时存在浏览器里，下次打开会自动合并。但别忘了推上去。</div>
+  </section>
+
+</div>
+
+<dialog id="dlgIn">
+  <h3 id="dlgInTitle">记录</h3>
+  <div class="hint" id="dlgInSub"></div>
+  <textarea id="dlgInNote" placeholder="今天学了什么？卡在哪？"></textarea>
+  <div class="row" style="justify-content:flex-end;gap:8px;margin-top:14px">
+    <button class="btn ghost" id="dlgInCancel">取消</button>
+    <button class="btn primary" id="dlgInSave">保存</button>
+  </div>
+</dialog>
+
+<dialog id="dlgLock">
+  <h3 id="lockTitle">设置密码</h3>
+  <div class="hint" id="lockSub"></div>
+  <label>密码</label>
+  <input id="lockPw" type="password" autocomplete="new-password" placeholder="四个不相关的词更容易记牢" />
+  <label id="lockPw2Label">再输一次</label>
+  <input id="lockPw2" type="password" autocomplete="new-password" />
+  <div class="err" id="lockErr"></div>
+  <div class="row" style="justify-content:space-between;gap:8px;margin-top:10px">
+    <div class="row" style="gap:8px">
+      <button class="btn ghost sm" id="lockRemove" style="color:#fca5a5">取消加密</button>
+      <button class="btn ghost sm" id="lockBackup" title="下载含明文日记的 JSON，妥善保管">导出备份</button>
+    </div>
+    <div class="row" style="gap:8px">
+      <button class="btn ghost" id="lockCancel">取消</button>
+      <button class="btn primary" id="lockOk">确定</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- 数据就存在这里。保存时整块被替换。 -->
+<script id="data" type="application/json">
+{
+  "version": 1,
+  "start": "2026-11-18",
+  "targetHours": 3000,
+  "days": {
+    "2026-11-18": {
+      "minutes": 35,
+      "note": "今天开始学习啦！\n蹭了婧婧的vpn\n使用了dsh嘿嘿",
+      "updated": "2026-11-18T16:19:01.484Z"
+    }
+  }
+}
+</script>
+
+<script>
+/* ================= 纯逻辑（Node 可直接测） ================= */
+var Core = (function () {
+  var WEEK = ['日', '一', '二', '三', '四', '五', '六'];
+  var BACKFILL_MIN = 60;
+  var GOAL_HOURS = 3000;
+  var KDF_ITER = 210000;
+
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function dateStr(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+  function parseDate(s) { var p = s.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
+  function addDays(s, n) { var d = parseDate(s); d.setDate(d.getDate() + n); return dateStr(d); }
+  function weekday(s) { return parseDate(s).getDay(); }
+  function weekdayCN(s) { return '周' + WEEK[weekday(s)]; }
+
+  /* 周五(5) / 周六(6) / 周日(0) 允许补前一天 */
+  function backfillAllowed(today) { var w = weekday(today); return w === 5 || w === 6 || w === 0; }
+  function backfillTarget(today) { return addDays(today, -1); }
+
+  function sumMinutes(days) {
+    var t = 0;
+    for (var k in days) { if (Object.prototype.hasOwnProperty.call(days, k)) t += Math.max(0, (days[k] && days[k].minutes) || 0); }
+    return t;
+  }
+  function recordedDays(days) {
+    var n = 0;
+    for (var k in days) { if (Object.prototype.hasOwnProperty.call(days, k) && ((days[k] && days[k].minutes) || 0) > 0) n++; }
+    return n;
+  }
+  function streak(days, today) {
+    var cur = ((days[today] && days[today].minutes) || 0) > 0 ? today : addDays(today, -1);
+    var n = 0;
+    while ((days[cur] && days[cur].minutes) || 0) { n++; cur = addDays(cur, -1); }
+    return n;
+  }
+  function bestStreak(days) {
+    var keys = [];
+    for (var k in days) { if ((days[k] && days[k].minutes) > 0) keys.push(k); }
+    keys.sort();
+    var best = 0, run = 0, prev = null;
+    for (var i = 0; i < keys.length; i++) {
+      run = (prev && addDays(prev, 1) === keys[i]) ? run + 1 : 1;
+      if (run > best) best = run;
+      prev = keys[i];
+    }
+    return best;
+  }
+  function avgPerDay(days, today, n) {
+    n = n || 30;
+    var sum = 0;
+    for (var i = 0; i < n; i++) { var d = addDays(today, -i); sum += (days[d] && days[d].minutes) || 0; }
+    return sum / n;
+  }
+  function projectEtaDate(minutesLeft, perDay, today) {
+    if (!(perDay > 0)) return null;
+    var days = Math.ceil(minutesLeft / perDay);
+    if (days > 20000) return null;
+    return addDays(today, days);
+  }
+  function level(minutes) {
+    if (!minutes) return 0;
+    if (minutes < 30) return 1;
+    if (minutes < 60) return 2;
+    if (minutes < 120) return 3;
+    return 4;
+  }
+  function fmtClock(ms) {
+    var s = Math.max(0, Math.floor(ms / 1000));
+    return pad(Math.floor(s / 3600)) + ':' + pad(Math.floor((s % 3600) / 60)) + ':' + pad(s % 60);
+  }
+  function fmtMin(m) {
+    m = Math.round(m || 0);
+    if (m < 60) return m + ' 分';
+    return Math.floor(m / 60) + ' 时 ' + (m % 60) + ' 分';
+  }
+  function mergeDays(a, b) {
+    var out = {}, k;
+    for (k in a) { if (Object.prototype.hasOwnProperty.call(a, k)) out[k] = a[k]; }
+    for (k in b) {
+      if (!Object.prototype.hasOwnProperty.call(b, k)) continue;
+      var x = out[k], y = b[k];
+      if (!x) { out[k] = y; continue; }
+      var yNewer = (y.updated || '') >= (x.updated || '');
+      var note = yNewer ? (y.note !== undefined ? y.note : x.note) : (x.note !== undefined ? x.note : y.note);
+      var merged = {
+        minutes: Math.max(x.minutes || 0, y.minutes || 0),
+        backfill: !!(x.backfill || y.backfill),
+        updated: yNewer ? (y.updated || x.updated) : (x.updated || y.updated)
+      };
+      if (note !== undefined) merged.note = note;
+      out[k] = merged;
+    }
+    return out;
+  }
+
+  /* ---------- 加密：PBKDF2 派生密钥 + AES-GCM ---------- */
+  function b64enc(u8) {
+    var s = '', CH = 0x8000;
+    for (var i = 0; i < u8.length; i += CH) {
+      s += String.fromCharCode.apply(null, u8.subarray(i, i + CH));
+    }
+    return btoa(s);
+  }
+  function b64dec(str) {
+    var bin = atob(str), u = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+    return u;
+  }
+  function newSalt() { return crypto.getRandomValues(new Uint8Array(16)); }
+  function subtle() { return (typeof crypto !== 'undefined' && crypto.subtle) ? crypto.subtle : null; }
+
+  async function deriveKey(password, saltU8, iter) {
+    var s = subtle();
+    if (!s) throw new Error('浏览器不支持 WebCrypto（需要 https 或 localhost）');
+    var base = await s.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveKey']);
+    return s.deriveKey(
+      { name: 'PBKDF2', salt: saltU8, iterations: iter || KDF_ITER, hash: 'SHA-256' },
+      base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']
+    );
+  }
+  async function encryptJson(obj, key) {
+    var s = subtle();
+    var iv = crypto.getRandomValues(new Uint8Array(12));
+    var ct = await s.encrypt({ name: 'AES-GCM', iv: iv }, key, new TextEncoder().encode(JSON.stringify(obj)));
+    var out = new Uint8Array(iv.length + ct.byteLength);
+    out.set(iv, 0);
+    out.set(new Uint8Array(ct), iv.length);
+    return b64enc(out);
+  }
+  async function decryptJson(str, key) {
+    var s = subtle();
+    var u = b64dec(str);
+    var iv = u.subarray(0, 12), ct = u.subarray(12);
+    var pt = await s.decrypt({ name: 'AES-GCM', iv: iv }, key, ct);
+    return JSON.parse(new TextDecoder().decode(pt));
+  }
+
+  return {
+    WEEK: WEEK, BACKFILL_MIN: BACKFILL_MIN, GOAL_HOURS: GOAL_HOURS, KDF_ITER: KDF_ITER,
+    pad: pad, dateStr: dateStr, parseDate: parseDate, addDays: addDays,
+    weekday: weekday, weekdayCN: weekdayCN,
+    backfillAllowed: backfillAllowed, backfillTarget: backfillTarget,
+    sumMinutes: sumMinutes, recordedDays: recordedDays, streak: streak, bestStreak: bestStreak,
+    avgPerDay: avgPerDay, projectEtaDate: projectEtaDate, level: level,
+    fmtClock: fmtClock, fmtMin: fmtMin, mergeDays: mergeDays,
+    b64enc: b64enc, b64dec: b64dec, newSalt: newSalt, subtle: subtle,
+    deriveKey: deriveKey, encryptJson: encryptJson, decryptJson: decryptJson
+  };
+})();
+
+/* ================= 浏览器 ================= */
+var boot = function () {
+  var LS_DATA = 'super-study:data';
+  var LS_ACTIVE = 'super-study:active';
+  var $ = function (id) { return document.getElementById(id); };
+  var state = {
+    data: null, active: null, timerId: null, pending: null, dirty: false,
+    notes: {}, key: null, lockMode: 'set'
+  };
+
+  function today() { return Core.dateStr(new Date()); }
+
+  function readEmbedded() {
+    try { return JSON.parse($('data').textContent || '{}'); } catch (e) { return null; }
+  }
+  function readLocal() {
+    try { return JSON.parse(localStorage.getItem(LS_DATA) || 'null'); } catch (e) { return null; }
+  }
+  function persistLocal() {
+    try { localStorage.setItem(LS_DATA, JSON.stringify(state.data)); } catch (e) {}
+  }
+  function setDirty(v) {
+    state.dirty = v;
+    var el = $('dirtyChip'), btn = $('btnSave');
+    el.textContent = v ? '有改动 · 未保存' : '已保存';
+    el.className = 'chip' + (v ? ' bad' : ' ok');
+    btn.className = 'btn sm' + (v ? ' pulse' : '');
+  }
+  function locked() { return !!(state.data && state.data.crypto) && !state.key; }
+
+  /* ---------- 渲染 ---------- */
+  function render() {
+    var d = state.data, t = today(), days = d.days || (d.days = {});
+
+    var totalMin = Core.sumMinutes(days);
+    var hours = totalMin / 60;
+    var goal = d.targetHours || Core.GOAL_HOURS;
+    $('totalH').textContent = hours.toFixed(1);
+    $('goalRight').textContent = '还差 ' + Math.max(0, goal - hours).toFixed(1) + ' 小时';
+    $('barFill').style.width = Math.min(100, (hours / goal) * 100).toFixed(2) + '%';
+
+    var avg = Core.avgPerDay(days, t, 30);
+    $('paceLine').textContent = '近 30 天日均 ' + Math.round(avg) + ' 分钟';
+    var eta = Core.projectEtaDate(Math.max(0, goal * 60 - totalMin), avg, t);
+    $('projLine').textContent = eta ? ('按这个节奏，' + eta + ' 达成')
+      : (avg > 0 ? '按这个节奏，看不到头' : '还没开始，先签一次到');
+
+    $('chipDays').textContent = Core.recordedDays(days) + ' 天';
+    $('chipStreak').textContent = '连续 ' + Core.streak(days, t) + ' 天';
+    $('chipBest').textContent = '最长 ' + Core.bestStreak(days) + ' 天';
+
+    $('todayLabel').textContent = t + ' ' + Core.weekdayCN(t);
+    var rec = days[t], hint;
+    if (state.active) hint = '正在计时，签退后写入记录。';
+    else if (rec && rec.minutes) hint = '今天已记 ' + Core.fmtMin(rec.minutes) + '，可以再学一段。';
+    else hint = '今天还没开始。';
+    var bt = Core.backfillTarget(t);
+    var bfOk = Core.backfillAllowed(t);
+    $('btnBackfill').disabled = !!state.active || !bfOk || !!(days[bt] && days[bt].minutes);
+    if (bfOk && !(days[bt] && days[bt].minutes)) {
+      hint += ' 今天可以补 ' + bt + '（需满 ' + Core.BACKFILL_MIN + ' 分钟）。';
+    }
+    $('ruleHint').textContent = hint;
+
+    $('btnLock').textContent = !state.data.crypto ? '🔒 未加密'
+      : (state.key ? '🔓 已解锁' : '🔒 已锁定');
+    $('btnLock').className = 'btn sm' + (state.data.crypto ? '' : ' ghost');
+
+    renderHeatmap();
+    renderList();
+  }
+
+  function renderHeatmap() {
+    var t = today(), days = state.data.days;
+    var end = Core.parseDate(t);
+    var start = Core.parseDate(Core.addDays(t, -363));
+    while (start.getDay() !== 0) start.setDate(start.getDate() - 1);
+    var html = '', cur = new Date(start.getTime());
+    while (cur <= end) {
+      var k = Core.dateStr(cur), rec = days[k], m = rec && rec.minutes;
+      var lv = Core.level(m);
+      var cls = (lv ? 'l' + lv : '') + ((rec && rec.backfill) ? ' bf' : '');
+      var tip = k + ' · ' + (m ? Core.fmtMin(m) : '未学') + ((rec && rec.backfill) ? ' · 补卡' : '');
+      html += '<i class="' + cls + '" title="' + tip + '"></i>';
+      cur.setDate(cur.getDate() + 1);
+    }
+    $('heatmap').innerHTML = html;
+  }
+
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
+
+  function renderList() {
+    var days = state.data.days, t = today(), isLocked = locked();
+    var keys = [];
+    for (var k in days) { if ((days[k] && days[k].minutes) > 0) keys.push(k); }
+    keys.sort().reverse();
+    if (keys.indexOf(t) === -1) keys.unshift(t);
+    if (!keys.length) { $('list').innerHTML = '<div class="hint">还没有记录。</div>'; return; }
+    var html = '';
+    keys.slice(0, 60).forEach(function (k) {
+      var r = days[k] || { minutes: 0 };
+      var note = isLocked ? '' : (state.notes[k] || '');
+      html += '<details class="day">' +
+        '<summary>' +
+        '<span class="d-date">' + k.slice(5) + ' ' + Core.weekdayCN(k) + '</span>' +
+        '<span class="d-min">' + (r.minutes ? Core.fmtMin(r.minutes) : '—') + '</span>' +
+        (r.backfill ? '<span class="chip">补卡</span>' : '') +
+        ((r.backfill && r.minutes < Core.BACKFILL_MIN) ? '<span class="chip bad">不足 60 分</span>' : '') +
+        '<span class="d-note">' + (isLocked ? '🔒 日记已加密' : (esc(note) || '写点什么…')) + '</span>' +
+        '</summary>' +
+        '<div class="d-body">' +
+        (isLocked
+          ? '<div class="hint">🔒 日记已加密。点右上角「已锁定」输入密码后查看。</div>'
+          : '<textarea data-note="' + k + '" placeholder="今天学了什么？">' + esc(note) + '</textarea>' +
+            '<div class="row" style="justify-content:space-between;margin-top:8px">' +
+            '<span class="hint">失焦自动记住</span>' +
+            '<button class="btn sm ghost" data-del="' + k + '">删除这条</button>' +
+            '</div>') +
+        '</div></details>';
+    });
+    $('list').innerHTML = html;
+  }
+
+  /* ---------- 计时 ---------- */
+  function tick() {
+    if (!state.active) return;
+    var el = $('timer');
+    el.className = 'timer';
+    var paint = function () { el.textContent = Core.fmtClock(Date.now() - state.active.start); };
+    paint();
+    clearInterval(state.timerId);
+    state.timerId = setInterval(paint, 1000);
+    $('btnIn').disabled = true;
+    $('btnOut').disabled = false;
+  }
+  function resumeTimer(active) {
+    state.active = active;
+    localStorage.setItem(LS_ACTIVE, JSON.stringify(active));
+    tick();
+  }
+  function stopTimer(silent) {
+    state.active = null;
+    localStorage.removeItem(LS_ACTIVE);
+    clearInterval(state.timerId);
+    state.timerId = null;
+    if (!silent) {
+      $('timer').textContent = '00:00:00';
+      $('timer').className = 'timer idle';
+    }
+    $('btnIn').disabled = false;
+    $('btnOut').disabled = true;
+  }
+
+  function commit(target, minutes, note, backfill) {
+    var days = state.data.days || (state.data.days = {});
+    var rec = days[target] || { minutes: 0 };
+    rec.minutes = (rec.minutes || 0) + minutes;
+    if (backfill) rec.backfill = true;
+    rec.updated = new Date().toISOString();
+    days[target] = rec;
+    if (note) state.notes[target] = note;
+    persistLocal();
+    setDirty(true);
+    render();
+  }
+
+  /* ---------- 加密状态 ---------- */
+  async function sealNotes() {
+    var k;
+    if (state.key) {
+      state.data.notes = await Core.encryptJson(state.notes, state.key);
+      for (k in state.data.days) {
+        if (Object.prototype.hasOwnProperty.call(state.data.days, k)) delete state.data.days[k].note;
+      }
+    } else {
+      delete state.data.notes;
+      for (k in state.notes) {
+        if (Object.prototype.hasOwnProperty.call(state.notes, k) && state.notes[k]) {
+          var r = state.data.days[k] || (state.data.days[k] = { minutes: 0 });
+          r.note = state.notes[k];
+        }
+      }
+    }
+  }
+
+  function openLockDialog(mode) {
+    state.lockMode = mode;
+    $('lockErr').textContent = '';
+    $('lockPw').value = '';
+    $('lockPw2').value = '';
+    var isSet = (mode === 'set' || mode === 'change');
+    $('lockPw2Label').style.display = isSet ? '' : 'none';
+    $('lockPw2').style.display = isSet ? '' : 'none';
+    $('lockRemove').style.display = (mode === 'manage') ? '' : 'none';
+    $('lockBackup').style.display = (mode === 'manage') ? '' : 'none';
+    if (mode === 'set') {
+      $('lockTitle').textContent = '设置密码（日记加密）';
+      $('lockSub').textContent = '时长公开，日记加密。密码不会存进文件，忘了就打不开。';
+    } else if (mode === 'unlock') {
+      $('lockTitle').textContent = '输入密码解锁';
+      $('lockSub').textContent = '密钥只存在这台浏览器内存里，刷新后需要再输一次。';
+    } else {
+      $('lockTitle').textContent = '已解锁 · 管理密码';
+      $('lockSub').textContent = '改密码会重新加密一遍；取消加密会把日记写回明文。';
+    }
+    $('dlgLock').showModal();
+  }
+
+  async function submitLock() {
+    var pw = $('lockPw').value;
+    var mode = state.lockMode;
+    var isSet = (mode === 'set' || mode === 'change');
+    $('lockErr').textContent = '';
+    if (!pw) { $('lockErr').textContent = '请输入密码'; return; }
+    if (isSet && pw !== $('lockPw2').value) { $('lockErr').textContent = '两次输入不一致'; return; }
+    if (!Core.subtle()) { $('lockErr').textContent = '这个环境不支持加密（需要 https 或 localhost）'; return; }
+
+    try {
+      if (mode === 'unlock') {
+        var salt = Core.b64dec(state.data.crypto.salt);
+        var key = await Core.deriveKey(pw, salt, state.data.crypto.iter);
+        state.notes = await Core.decryptJson(state.data.notes, key);
+        state.key = key;
+      } else {
+        var s2 = Core.newSalt();
+        var k2 = await Core.deriveKey(pw, s2, Core.KDF_ITER);
+        state.key = k2;
+        state.data.crypto = { kdf: 'PBKDF2-SHA256', iter: Core.KDF_ITER, salt: Core.b64enc(s2) };
+        await sealNotes();
+      }
+      $('dlgLock').close();
+      setDirty(true);
+      render();
+    } catch (e) {
+      $('lockErr').textContent = (mode === 'unlock') ? '密码不对，或文件被改过。' : ('加密失败：' + e.message);
+    }
+  }
+
+  async function removeLock() {
+    if (!state.key) return;
+    if (!confirm('取消加密？日记会以明文写回文件。')) return;
+    state.key = null;
+    delete state.data.crypto;
+    await sealNotes();
+    $('dlgLock').close();
+    setDirty(true);
+    render();
+  }
+
+  /* ---------- 保存：把数据写回 HTML 并下载 ---------- */
+  async function saveToFile() {
+    await sealNotes();
+    var hm = $('heatmap').innerHTML, ls = $('list').innerHTML;
+    $('heatmap').innerHTML = '';
+    $('list').innerHTML = '';
+    var json = JSON.stringify(state.data, null, 2).replace(/<\//g, '<\\/');
+    var html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+    html = html.replace(/(<script id="data" type="application\/json">)[\s\S]*?(<\/script>)/,
+      function (_, open, close) { return open + '\n' + json + '\n' + close; });
+    $('heatmap').innerHTML = hm;
+    $('list').innerHTML = ls;
+
+    var blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = 'index.html';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+    setDirty(false);
+    persistLocal();
+  }
+
+  /* ---------- 事件 ---------- */
+  function bind() {
+    $('btnIn').addEventListener('click', function () {
+      resumeTimer({ start: Date.now(), mode: 'normal', target: today() });
+      render();
+    });
+    $('btnBackfill').addEventListener('click', function () {
+      var t = today();
+      if (!Core.backfillAllowed(t)) return;
+      resumeTimer({ start: Date.now(), mode: 'backfill', target: Core.backfillTarget(t) });
+      render();
+    });
+    $('btnOut').addEventListener('click', function () {
+      if (!state.active) return;
+      var mins = Math.max(1, Math.round((Date.now() - state.active.start) / 60000));
+      var s = state.active;
+      state.pending = { target: s.target, minutes: mins, backfill: s.mode === 'backfill', start: s.start };
+      stopTimer();
+      openDialog();
+      render();
+    });
+    $('btnSave').addEventListener('click', function () {
+      saveToFile().catch(function (e) { alert('保存失败：' + e.message); });
+    });
+
+    $('dlgInCancel').addEventListener('click', function () {
+      var p = state.pending;
+      $('dlgIn').close();
+      if (p) { resumeTimer({ start: p.start, mode: p.backfill ? 'backfill' : 'normal', target: p.target }); }
+      render();
+    });
+    $('dlgInSave').addEventListener('click', function () {
+      var p = state.pending;
+      if (!p) return;
+      commit(p.target, p.minutes, $('dlgInNote').value.trim(), p.backfill);
+      state.pending = null;
+      $('dlgIn').close();
+      setDirty(true);
+    });
+
+    $('btnLock').addEventListener('click', function () {
+      if (!state.data.crypto) openLockDialog('set');
+      else if (!state.key) openLockDialog('unlock');
+      else openLockDialog('manage');
+    });
+    $('lockCancel').addEventListener('click', function () { $('dlgLock').close(); });
+    $('lockOk').addEventListener('click', function () { submitLock(); });
+    $('lockRemove').addEventListener('click', function () { removeLock(); });
+    $('lockBackup').addEventListener('click', function () {
+      var clone = JSON.parse(JSON.stringify(state.data));
+      delete clone.notes;
+      delete clone.crypto;
+      for (var k in state.notes) {
+        if (Object.prototype.hasOwnProperty.call(state.notes, k) && state.notes[k]) {
+          var r = clone.days[k] || (clone.days[k] = { minutes: 0 });
+          r.note = state.notes[k];
+        }
+      }
+      var blob = new Blob([JSON.stringify(clone, null, 2)], { type: 'application/json' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url; a.download = 'checkins-backup.json';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+    });
+    $('lockPw2').addEventListener('keydown', function (e) { if (e.key === 'Enter') submitLock(); });
+    $('lockPw').addEventListener('keydown', function (e) {
+      if (e.key !== 'Enter') return;
+      if (state.lockMode === 'unlock') submitLock(); else $('lockPw2').focus();
+    });
+
+    $('list').addEventListener('change', function (e) {
+      var k = e.target.getAttribute && e.target.getAttribute('data-note');
+      if (!k) return;
+      state.notes[k] = e.target.value;
+      var days = state.data.days;
+      var rec = days[k] || (days[k] = { minutes: 0 });
+      rec.updated = new Date().toISOString();
+      persistLocal(); setDirty(true);
+      var box = e.target.closest('details');
+      if (box) {
+        var pv = box.querySelector('.d-note');
+        if (pv) pv.textContent = state.notes[k] || '写点什么…';
+      }
+    });
+    $('list').addEventListener('click', function (e) {
+      var k = e.target.getAttribute && e.target.getAttribute('data-del');
+      if (!k) return;
+      if (!confirm('删除 ' + k + ' 的记录？')) return;
+      delete state.data.days[k];
+      delete state.notes[k];
+      persistLocal(); setDirty(true); render();
+    });
+    window.addEventListener('beforeunload', persistLocal);
+  }
+
+  function openDialog() {
+    var p = state.pending;
+    if (!p) return;
+    $('dlgInTitle').textContent = p.backfill ? ('补卡：' + p.target) : ('记录 ' + p.target);
+    $('dlgInSub').textContent = '本次 ' + Core.fmtMin(p.minutes) +
+      ((p.backfill && p.minutes < Core.BACKFILL_MIN) ? '（补卡建议满 60 分钟，这次不足）' : '') +
+      ' ｜ 写一句今天学了什么，不写也行' +
+      (state.key ? '' : '（日记会存成明文）');
+    $('dlgInNote').value = state.notes[p.target] || '';
+    $('dlgIn').showModal();
+  }
+
+  /* ---------- 启动 ---------- */
+  function start() {
+    var embedded = readEmbedded() || { version: 1, start: '2026-11-18', targetHours: 3000, days: {} };
+    var local = readLocal();
+    if (!embedded.days) embedded.days = {};
+    var notes = {}, k;
+
+    if (!embedded.crypto) {
+      for (k in embedded.days) {
+        if (Object.prototype.hasOwnProperty.call(embedded.days, k) && embedded.days[k] && embedded.days[k].note) {
+          notes[k] = embedded.days[k].note;
+        }
+      }
+    }
+    state.data = (local && local.days) ? {
+      version: embedded.version || 1,
+      start: embedded.start || '2026-11-18',
+      targetHours: embedded.targetHours || Core.GOAL_HOURS,
+      crypto: embedded.crypto,
+      notes: embedded.notes,
+      days: Core.mergeDays(embedded.days, local.days)
+    } : embedded;
+
+    if (!state.data.crypto) {
+      for (k in state.data.days) {
+        if (state.data.days[k] && state.data.days[k].note && !notes[k]) notes[k] = state.data.days[k].note;
+      }
+    }
+    state.notes = notes;
+
+    $('bfMin').textContent = Core.BACKFILL_MIN;
+    bind();
+
+    var act = null;
+    try { act = JSON.parse(localStorage.getItem(LS_ACTIVE) || 'null'); } catch (e) {}
+    if (act && act.start) { state.active = act; }
+
+    setDirty(false);
+    render();
+    if (state.active) tick();
+    persistLocal();
+  }
+
+  start();
+};
+
+if (typeof module !== 'undefined' && module.exports) { module.exports = Core; }
+if (typeof document !== 'undefined') {
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+}
+</script>
+</body>
+</html>
