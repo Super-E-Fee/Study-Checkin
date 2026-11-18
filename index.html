@@ -1,8 +1,7 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Super-Study · 打卡</title>
 <style>
 :root{
@@ -85,7 +84,12 @@ dialog h3{margin:0 0 12px;font-size:16px}
 .err{color:#fca5a5;font-size:12.5px;min-height:18px;margin-top:8px}
 @media(max-width:560px){ .big{font-size:38px} .timer{font-size:32px} }
 </style>
-</head>
+<style>
+  .imageye-selected {
+    outline: 2px solid black !important;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5) !important;
+  }
+</style></head>
 <body>
 <div class="wrap">
 
@@ -95,9 +99,9 @@ dialog h3{margin:0 0 12px;font-size:16px}
       <div class="sub">2026-11-18 → 2033-11-18 ｜ 每天 30 分钟</div>
     </div>
     <div class="row">
-      <span id="dirtyChip" class="chip">已保存</span>
-      <button class="btn sm" id="btnLock">🔒 未加密</button>
-      <button class="btn sm" id="btnSave" title="下载带数据的 HTML，替换原文件后 push">保存到文件</button>
+      <span id="dirtyChip" class="chip bad">有改动 · 未保存</span>
+      <button class="btn sm" id="btnLock">🔓 已解锁</button>
+      <button class="btn sm pulse" id="btnSave" title="下载带数据的 HTML，替换原文件后 push">保存到文件</button>
     </div>
   </header>
 
@@ -105,38 +109,38 @@ dialog h3{margin:0 0 12px;font-size:16px}
     <div class="row between">
       <div>
         <div class="muted small">总计时长</div>
-        <div class="big num"><span id="totalH">0.0</span><small>小时</small></div>
+        <div class="big num"><span id="totalH">0.6</span><small>小时</small></div>
       </div>
       <div style="text-align:right">
         <div class="muted small">目标 3000 小时</div>
-        <div class="num" id="goalRight" style="font-size:15px">还差 3000.0 小时</div>
+        <div class="num" id="goalRight" style="font-size:15px">还差 2999.4 小时</div>
       </div>
     </div>
-    <div class="bar" style="margin:14px 0 10px"><i id="barFill"></i></div>
+    <div class="bar" style="margin:14px 0 10px"><i id="barFill" style="width: 0.02%;"></i></div>
     <div class="row between small muted">
-      <span id="paceLine">—</span>
-      <span id="projLine">—</span>
+      <span id="paceLine">近 30 天日均 1 分钟</span>
+      <span id="projLine">按这个节奏，看不到头</span>
     </div>
     <div class="row" style="margin-top:12px;gap:8px">
-      <span class="chip" id="chipDays">0 天</span>
-      <span class="chip" id="chipStreak">连续 0 天</span>
-      <span class="chip" id="chipBest">最长 0 天</span>
+      <span class="chip" id="chipDays">1 天</span>
+      <span class="chip" id="chipStreak">连续 1 天</span>
+      <span class="chip" id="chipBest">最长 1 天</span>
     </div>
   </section>
 
   <section class="card">
     <div class="row between">
       <div>
-        <div class="muted small" id="todayLabel">今天</div>
+        <div class="muted small" id="todayLabel">2026-11-19 周四</div>
         <div class="timer idle" id="timer">00:00:00</div>
       </div>
       <div class="row" style="gap:8px">
-        <button class="btn ghost sm" id="btnBackfill" title="周五六日可补前一天">补卡</button>
+        <button class="btn ghost sm" id="btnBackfill" title="周五六日可补前一天" disabled="">补卡</button>
         <button class="btn primary" id="btnIn">签到</button>
-        <button class="btn stop" id="btnOut" disabled>签退</button>
+        <button class="btn stop" id="btnOut" disabled="">签退</button>
       </div>
     </div>
-    <div class="hint" id="ruleHint"></div>
+    <div class="hint" id="ruleHint">今天还没开始。</div>
   </section>
 
   <section class="card">
@@ -192,17 +196,17 @@ dialog h3{margin:0 0 12px;font-size:16px}
 </dialog>
 
 <dialog id="dlgLock">
-  <h3 id="lockTitle">设置密码</h3>
-  <div class="hint" id="lockSub"></div>
+  <h3 id="lockTitle">设置密码（日记加密）</h3>
+  <div class="hint" id="lockSub">时长公开，日记加密。密码不会存进文件，忘了就打不开。</div>
   <label>密码</label>
-  <input id="lockPw" type="password" autocomplete="new-password" placeholder="四个不相关的词更容易记牢" />
+  <input id="lockPw" type="password" autocomplete="new-password" placeholder="四个不相关的词更容易记牢" aria-autocomplete="list">
   <label id="lockPw2Label">再输一次</label>
-  <input id="lockPw2" type="password" autocomplete="new-password" />
+  <input id="lockPw2" type="password" autocomplete="new-password">
   <div class="err" id="lockErr"></div>
   <div class="row" style="justify-content:space-between;gap:8px;margin-top:10px">
     <div class="row" style="gap:8px">
-      <button class="btn ghost sm" id="lockRemove" style="color:#fca5a5">取消加密</button>
-      <button class="btn ghost sm" id="lockBackup" title="下载含明文日记的 JSON，妥善保管">导出备份</button>
+      <button class="btn ghost sm" id="lockRemove" style="color: rgb(252, 165, 165); display: none;">取消加密</button>
+      <button class="btn ghost sm" id="lockBackup" title="下载含明文日记的 JSON，妥善保管" style="display: none;">导出备份</button>
     </div>
     <div class="row" style="gap:8px">
       <button class="btn ghost" id="lockCancel">取消</button>
@@ -220,10 +224,15 @@ dialog h3{margin:0 0 12px;font-size:16px}
   "days": {
     "2026-11-18": {
       "minutes": 35,
-      "note": "今天开始学习啦！\n蹭了婧婧的vpn\n使用了dsh嘿嘿",
       "updated": "2026-11-18T16:19:01.484Z"
     }
-  }
+  },
+  "crypto": {
+    "kdf": "PBKDF2-SHA256",
+    "iter": 210000,
+    "salt": "ayD1s4kc23ymIpKj4ClJqQ=="
+  },
+  "notes": "TUBhd2SEq38mxH2E+TkoJpySMjXt/OiitYhZPXhyhNjKfFVjj0MfMCNMyCmPCbX12KuRB6ELhb53RF4VVeBo7QlXV8J10DWtZ/D5+BRv2q2VTaY1mC7+sDj9gnibZOG/TvUMeKleHCIobvx8Wg=="
 }
 </script>
 
@@ -809,5 +818,6 @@ if (typeof document !== 'undefined') {
   else boot();
 }
 </script>
-</body>
-</html>
+
+
+</body></html>
