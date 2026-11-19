@@ -16,9 +16,11 @@ html,body{margin:0}
 body{
   background:radial-gradient(1100px 520px at 50% -12%, #16203a 0%, var(--bg) 62%);
   color:var(--text); font:15px/1.65 -apple-system,"Segoe UI","Microsoft YaHei",system-ui,sans-serif;
-  padding:26px 16px 64px;
+  padding:26px 16px 64px; overflow-x:hidden;
 }
 .wrap{max-width:900px;margin:0 auto;display:grid;gap:14px}
+/* grid 子项默认 min-width:auto，长文本会把整块撑宽——显式归零 */
+.wrap>*{min-width:0}
 header{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:2px}
 h1{font-size:19px;margin:0;letter-spacing:.4px}
 .sub{color:var(--muted);font-size:12.5px}
