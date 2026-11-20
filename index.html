@@ -1,8 +1,7 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Super-Study · 打卡</title>
 <style>
 :root{
@@ -87,7 +86,12 @@ dialog h3{margin:0 0 12px;font-size:16px}
 .err{color:#fca5a5;font-size:12.5px;min-height:18px;margin-top:8px}
 @media(max-width:560px){ .big{font-size:38px} .timer{font-size:32px} }
 </style>
-</head>
+<style>
+  .imageye-selected {
+    outline: 2px solid black !important;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5) !important;
+  }
+</style></head>
 <body>
 <div class="wrap">
 
@@ -97,9 +101,9 @@ dialog h3{margin:0 0 12px;font-size:16px}
       <div class="sub">2026-11-18 → 2033-11-18 ｜ 每天 30 分钟</div>
     </div>
     <div class="row">
-      <span id="dirtyChip" class="chip">已保存</span>
-      <button class="btn sm" id="btnLock">🔒 未加密</button>
-      <button class="btn sm" id="btnSave" title="下载带数据的 HTML，替换原文件后 push">保存到文件</button>
+      <span id="dirtyChip" class="chip bad">有改动 · 未保存</span>
+      <button class="btn sm" id="btnLock">🔓 已解锁</button>
+      <button class="btn sm pulse" id="btnSave" title="下载带数据的 HTML，替换原文件后 push">保存到文件</button>
     </div>
   </header>
 
@@ -107,38 +111,38 @@ dialog h3{margin:0 0 12px;font-size:16px}
     <div class="row between">
       <div>
         <div class="muted small">总计时长</div>
-        <div class="big num"><span id="totalH">0.0</span><small>小时</small></div>
+        <div class="big num"><span id="totalH">3.1</span><small>小时</small></div>
       </div>
       <div style="text-align:right">
         <div class="muted small">目标 3000 小时</div>
-        <div class="num" id="goalRight" style="font-size:15px">还差 3000.0 小时</div>
+        <div class="num" id="goalRight" style="font-size:15px">还差 2996.9 小时</div>
       </div>
     </div>
-    <div class="bar" style="margin:14px 0 10px"><i id="barFill"></i></div>
+    <div class="bar" style="margin:14px 0 10px"><i id="barFill" style="width: 0.1%;"></i></div>
     <div class="row between small muted">
-      <span id="paceLine">—</span>
-      <span id="projLine">—</span>
+      <span id="paceLine">近 30 天日均 6 分钟</span>
+      <span id="projLine">按这个节奏，看不到头</span>
     </div>
     <div class="row" style="margin-top:12px;gap:8px">
-      <span class="chip" id="chipDays">0 天</span>
-      <span class="chip" id="chipStreak">连续 0 天</span>
-      <span class="chip" id="chipBest">最长 0 天</span>
+      <span class="chip" id="chipDays">3 天</span>
+      <span class="chip" id="chipStreak">连续 3 天</span>
+      <span class="chip" id="chipBest">最长 3 天</span>
     </div>
   </section>
 
   <section class="card">
     <div class="row between">
       <div>
-        <div class="muted small" id="todayLabel">今天</div>
+        <div class="muted small" id="todayLabel">2026-11-21 周六</div>
         <div class="timer idle" id="timer">00:00:00</div>
       </div>
       <div class="row" style="gap:8px">
-        <button class="btn ghost sm" id="btnBackfill" title="周五六日可补前一天">补卡</button>
+        <button class="btn ghost sm" id="btnBackfill" title="周五六日可补前一天" disabled="">补卡</button>
         <button class="btn primary" id="btnIn">签到</button>
-        <button class="btn stop" id="btnOut" disabled>签退</button>
+        <button class="btn stop" id="btnOut" disabled="">签退</button>
       </div>
     </div>
-    <div class="hint" id="ruleHint"></div>
+    <div class="hint" id="ruleHint">今天还没开始。</div>
   </section>
 
   <section class="card">
@@ -184,8 +188,8 @@ dialog h3{margin:0 0 12px;font-size:16px}
 </div>
 
 <dialog id="dlgIn">
-  <h3 id="dlgInTitle">记录</h3>
-  <div class="hint" id="dlgInSub"></div>
+  <h3 id="dlgInTitle">记录 2026-11-20</h3>
+  <div class="hint" id="dlgInSub">本次 1 时 22 分 ｜ 写一句今天学了什么，不写也行</div>
   <textarea id="dlgInNote" placeholder="今天学了什么？卡在哪？"></textarea>
   <div class="row" style="justify-content:flex-end;gap:8px;margin-top:14px">
     <button class="btn ghost" id="dlgInCancel">取消</button>
@@ -194,17 +198,17 @@ dialog h3{margin:0 0 12px;font-size:16px}
 </dialog>
 
 <dialog id="dlgLock">
-  <h3 id="lockTitle">设置密码</h3>
-  <div class="hint" id="lockSub"></div>
+  <h3 id="lockTitle">输入密码解锁</h3>
+  <div class="hint" id="lockSub">密钥只存在这台浏览器内存里，刷新后需要再输一次。</div>
   <label>密码</label>
-  <input id="lockPw" type="password" autocomplete="new-password" placeholder="四个不相关的词更容易记牢" />
-  <label id="lockPw2Label">再输一次</label>
-  <input id="lockPw2" type="password" autocomplete="new-password" />
+  <input id="lockPw" type="password" autocomplete="new-password" placeholder="四个不相关的词更容易记牢" aria-autocomplete="list">
+  <label id="lockPw2Label" style="display: none;">再输一次</label>
+  <input id="lockPw2" type="password" autocomplete="new-password" style="display: none;">
   <div class="err" id="lockErr"></div>
   <div class="row" style="justify-content:space-between;gap:8px;margin-top:10px">
     <div class="row" style="gap:8px">
-      <button class="btn ghost sm" id="lockRemove" style="color:#fca5a5">取消加密</button>
-      <button class="btn ghost sm" id="lockBackup" title="下载含明文日记的 JSON，妥善保管">导出备份</button>
+      <button class="btn ghost sm" id="lockRemove" style="color: rgb(252, 165, 165); display: none;">取消加密</button>
+      <button class="btn ghost sm" id="lockBackup" title="下载含明文日记的 JSON，妥善保管" style="display: none;">导出备份</button>
     </div>
     <div class="row" style="gap:8px">
       <button class="btn ghost" id="lockCancel">取消</button>
@@ -224,7 +228,7 @@ dialog h3{margin:0 0 12px;font-size:16px}
     "iter": 210000,
     "salt": "wb9B6d9EptqNrHS+3QX3+Q=="
   },
-  "notes": "Oq06tW/wsJs19uMiwnlHySLluk73QwfLxWBxFPEwwkzbxS+hPyM+4DDbtAivTV4IzJ3w3B0Hmwxmn1Abdj0SfEUukP+X/hhuuTBucVhPZ4vyVcPfonbRdeC/Dt3u2ApJudK/UBHNscN/iI75Sh4T3NFINPLk1AVdq0ydAtzEIzLYKj99VxtPyifH/AVoe8d4HupNhTydsSLd88R5Pk1E5YGLWOJQqKvlVtWmttwWOh9ICF92FZlYqZoE++uVFZmHpehPoHozwPa13VbjXxfALMhJWgK+v1BpzPOGVpjPVzEGHhknsLyupFuYn4aH9zt9UPhUxLVTczR09oN2nbbzbuPiZeyhmImQeElwphCOldyK07FCYKzCE81KAnUY1KFAI8gyA5MG3vS5eZpUB5sqqFtHHDsgnNiZy5f5F7UQSADSnS2TwBjKMeamY9sgCYmnaMoznd3mzFox60rVEUOfboP0MrtKlgpXl8yzg7OJU1vLgf1MSVSwwR7JA/T0Px2lKfvFzmA1mw+7nrBmEUlEZq+5BD3snLxxCJRWc5g127BfTxIbHQtMWbdDIC5leSvguq72QnS6xaTirRfOfDlGdIbpzg8xOz42dxIp8eGdP2rzFB93uaIFL4GIFDqGPmB88ndcLijEODC1Tqt/4hfsRMGSnPVh2sIbev8COcILHL36r09cOfFBij251g84bLxlFS3E0oZZ6DjylerKOzJKfIHjeir8ytYulsk+uNVr74USKiJ9bjKtknjz7MOfiKTOYZmvEZZu/ZRWmzK87lUsbnPRlokwmJRm8TOcvmE5Ll7S4lqOhG5DaBP0SCaAKkNN5/Fp4674MrNaMsFY0i6jnJvZmnFReukLtvqYdYu1o5aZTFA3HS8Jv9SSlIhZwRuPuLIR1CwVT1YQ3xcsF9AXbfc5XdlBBp0+uO9Ym1ZrkZmLTOAvjpRM+YFydiuIGzhjUwOFIe6ybBOT3VrY1h5sfYY4OFptSP89bsr+CJza92sLixUzTS/vcJw/2nDHBBUwhOBayJhDHplxK1fERjNSTce7eMM3aKmALDP5BJRJkwvT/byiGUbjX7qgjTCluFvFgZ6Q+DXCvcMG1HxqlUxgtbx0/sRH6fNB5auFqKf3YcnPI00RgXNYHmCBDJaLwwETOaNNTLNC8mlMyZT2Z64AeI+0ryySDZnM0Tc6+BykHBtLeniCflfN09fHeJkt8uQ8wJYO6qyeFOIxKepEj/HrNnGAzCp5Dc7DhvSfhnLqwHLwG8XZr7c4TLPPSrT9bNjw4/q5woKqVlp1YAzBViUJJYF7z32T47IJIfocrUHTplFEj8+4MI6QF78fgv/GdLz1Zp1ZMo2CQeIEGrfwWOx27oYXQMNWosxUtQjqUHhL3f7DIAggG6SPZ9V/ZegPaBs3Hoax9++7NiAZZXt8f16w7dxQr4xwnLBwB9VT+zn/mV/4wNaF/47exsgBh1Uztg1mme1DoSrDjKfOAYhhgmbTM6E5QhKcDst4Ov1PgCMQSv50P8cmI/FWHJTuAAXpPPkU",
+  "notes": "p2pKXoE20qKgjdH5zWR/k66tth7pnakE7tsbKP5Yc5isC37pIQr5wCT1DmHStkehDq5Z9W9Jazjan/1g/WYrAKtE5gexy/0v+dEUFe4uTdVUNqNgovwR7rGfMzRwFcFoNgUEVdadRShlfq2LqzwYBtcwlWxrkeDVxHbvGsdrk/FY447bbXW6RYh6bGqAPXadRPwrItfqZgkzYkx6ruy7BbI7/iEDZjj0ZLwW1Tt98ouDPoiaS7bdNG/soy9xWOc3oSCVUWxD9OpVSnj1p2LcMg8eUn2WG0zQWliKiBEeY09XOgkECsb6ZFvJKz5Y+WjlBz/0lfMheSRJ4E3uX98vLuDieUUKMtAH/qg0cXTMbXecLeH8mvYJel76OhTd22onCBX6yZHD0RJgWRtO73ZG94gqdnpxDnnUN7/l2yGgCSLpX0UG9Rn+/G9ElX4ZWPLRbVA3Qgwx31hrZ73Gh7X3NG5swasZo/uOV4L2bo0icWaAkKHqHnKtkhX8AvEdATb5z/hluIKm8A4phx/l7u2CFg7RWjN/x72ckyjARZ+sxVBX3LJ8wiDb0qj75uwWccSOEKO18W65I5bqGRdlCYz78thZh9roWxAwv8u4jJeX0/RnE6AQyihGQcdzUYcAk/wcARzUUk/Bf7s0QJP5ZL8ki3HTQ+NWPTXAU+KjvR/3HN5SI5pogq49djX2EWRxrnLdYm2HlIXgLqk7pI3lsEvSMQwPcUSDRwU7n/6stWQiwgRbEaXnuGAQRAaogI2/vLSlCbkSAk65GOECMjWCU7Zy1moIYcDhy67GGPYqk31ov8myvIa0FD+hAu/Lqxj7GFj+hDKvIAk9RPyCZ0G7Z4pZOFmLcsnX3MkbbGcD4KEcL33ykKNN32ZWkt13Uoc3uvurRnW4lS78SV8cxVzGdLeu0SgReB/SZ7/SKIvYHZCD0+7jpY8qkQv/8cQUMKJQ879SzGm+OwPIKzIymtr1OL20SiFvA7vBuxCeKvTWlLLydQ2fmQ4O4Rmidc+hkXmO8bPCAatM53kiFqh/nVCIocCVkw4muQopQpob/dVfMRFWzZKbRljk8QpS3fU+eWaFTKP4Vb7zO4m+mfD5RO2uCsqGCK5WOj/DxN9GUy65QVpOgp5Y4cB7FgJXtyn0xNRwLsFo3c1zKdCxTkLitS/LzIGZSfs3cvZW2C8XmuhMmqFgBuUaNYr9o7o5z8oMdDUgihd9e6l7UI8RZhUBIjTK/Xwb2f31qFNiwj5Ph09zHu1lcR5znK6oL/lxNzrX9oUWNGL8fx86uXfT8JRi/I98OKKZkmhcnTefmawlZfDXnzwtQMEPdwa2ADMDbSACUB4VgfBjTZ9/InTwY31+M7oDAVxNcf6S6cC9cVWLz+44ZsM0XUf5BEQ2fPOrzqC276UUKOTcp8b1ADq4xZhxWBa+NM+EUwB/TprTHi7TJEdmJw0yD4WI3tGMo2OdX+LxspuudxoYc8yXtYYrxsYc15hHzkMWjFikb6cB7YOBEzlH6R549hwjXyBxcfi/EUsrHx8mdKOXdVVhMYeM3u9Xk/J6aIeQAij+AVvh809dd36uGZb3yN8AJHM7qCHSGChA9CWO9oKmtygdGfTQqD31SHN+bzY6wM/jF+GiuZaW/wbLG4w30BwZfCUL26WvSiVVbYqlfoEdpXC5tS2kZzoGuiE1lkmBWfEiQczFVA==",
   "days": {
     "2026-11-18": {
       "minutes": 35,
@@ -233,7 +237,12 @@ dialog h3{margin:0 0 12px;font-size:16px}
     },
     "2026-11-19": {
       "minutes": 69,
+      "backfill": false,
       "updated": "2026-11-19T15:54:18.738Z"
+    },
+    "2026-11-20": {
+      "minutes": 82,
+      "updated": "2026-11-20T17:00:22.573Z"
     }
   }
 }
@@ -845,5 +854,6 @@ if (typeof document !== 'undefined') {
   else boot();
 }
 </script>
-</body>
-</html>
+
+
+</body></html>
