@@ -91,6 +91,11 @@ dialog h3{margin:0 0 12px;font-size:16px}
     outline: 2px solid black !important;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5) !important;
   }
+</style><style>
+  .imageye-selected {
+    outline: 2px solid black !important;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5) !important;
+  }
 </style></head>
 <body>
 <div class="wrap">
@@ -111,21 +116,21 @@ dialog h3{margin:0 0 12px;font-size:16px}
     <div class="row between">
       <div>
         <div class="muted small">总计时长</div>
-        <div class="big num"><span id="totalH">3.1</span><small>小时</small></div>
+        <div class="big num"><span id="totalH">4.2</span><small>小时</small></div>
       </div>
       <div style="text-align:right">
         <div class="muted small">目标 3000 小时</div>
-        <div class="num" id="goalRight" style="font-size:15px">还差 2996.9 小时</div>
+        <div class="num" id="goalRight" style="font-size:15px">还差 2995.8 小时</div>
       </div>
     </div>
-    <div class="bar" style="margin:14px 0 10px"><i id="barFill" style="width: 0.1%;"></i></div>
+    <div class="bar" style="margin:14px 0 10px"><i id="barFill" style="width: 0.14%;"></i></div>
     <div class="row between small muted">
-      <span id="paceLine">近 30 天日均 6 分钟</span>
+      <span id="paceLine">近 30 天日均 8 分钟</span>
       <span id="projLine">按这个节奏，看不到头</span>
     </div>
     <div class="row" style="margin-top:12px;gap:8px">
-      <span class="chip" id="chipDays">3 天</span>
-      <span class="chip" id="chipStreak">连续 3 天</span>
+      <span class="chip" id="chipDays">4 天</span>
+      <span class="chip" id="chipStreak">连续 1 天</span>
       <span class="chip" id="chipBest">最长 3 天</span>
     </div>
   </section>
@@ -133,7 +138,7 @@ dialog h3{margin:0 0 12px;font-size:16px}
   <section class="card">
     <div class="row between">
       <div>
-        <div class="muted small" id="todayLabel">2026-11-21 周六</div>
+        <div class="muted small" id="todayLabel">2026-11-24 周二</div>
         <div class="timer idle" id="timer">00:00:00</div>
       </div>
       <div class="row" style="gap:8px">
@@ -188,8 +193,8 @@ dialog h3{margin:0 0 12px;font-size:16px}
 </div>
 
 <dialog id="dlgIn">
-  <h3 id="dlgInTitle">记录 2026-11-20</h3>
-  <div class="hint" id="dlgInSub">本次 1 时 22 分 ｜ 写一句今天学了什么，不写也行</div>
+  <h3 id="dlgInTitle">记录 2026-11-23</h3>
+  <div class="hint" id="dlgInSub">本次 1 时 3 分 ｜ 写一句今天学了什么，不写也行</div>
   <textarea id="dlgInNote" placeholder="今天学了什么？卡在哪？"></textarea>
   <div class="row" style="justify-content:flex-end;gap:8px;margin-top:14px">
     <button class="btn ghost" id="dlgInCancel">取消</button>
@@ -198,8 +203,8 @@ dialog h3{margin:0 0 12px;font-size:16px}
 </dialog>
 
 <dialog id="dlgLock">
-  <h3 id="lockTitle">输入密码解锁</h3>
-  <div class="hint" id="lockSub">密钥只存在这台浏览器内存里，刷新后需要再输一次。</div>
+  <h3 id="lockTitle">已解锁 · 管理密码</h3>
+  <div class="hint" id="lockSub">改密码会重新加密一遍；取消加密会把日记写回明文。</div>
   <label>密码</label>
   <input id="lockPw" type="password" autocomplete="new-password" placeholder="四个不相关的词更容易记牢" aria-autocomplete="list">
   <label id="lockPw2Label" style="display: none;">再输一次</label>
@@ -207,8 +212,8 @@ dialog h3{margin:0 0 12px;font-size:16px}
   <div class="err" id="lockErr"></div>
   <div class="row" style="justify-content:space-between;gap:8px;margin-top:10px">
     <div class="row" style="gap:8px">
-      <button class="btn ghost sm" id="lockRemove" style="color: rgb(252, 165, 165); display: none;">取消加密</button>
-      <button class="btn ghost sm" id="lockBackup" title="下载含明文日记的 JSON，妥善保管" style="display: none;">导出备份</button>
+      <button class="btn ghost sm" id="lockRemove" style="color: rgb(252, 165, 165);">取消加密</button>
+      <button class="btn ghost sm" id="lockBackup" title="下载含明文日记的 JSON，妥善保管" style="">导出备份</button>
     </div>
     <div class="row" style="gap:8px">
       <button class="btn ghost" id="lockCancel">取消</button>
@@ -226,9 +231,9 @@ dialog h3{margin:0 0 12px;font-size:16px}
   "crypto": {
     "kdf": "PBKDF2-SHA256",
     "iter": 210000,
-    "salt": "wb9B6d9EptqNrHS+3QX3+Q=="
+    "salt": "qE4M/t9TP3YnTl7udmtkVA=="
   },
-  "notes": "p2pKXoE20qKgjdH5zWR/k66tth7pnakE7tsbKP5Yc5isC37pIQr5wCT1DmHStkehDq5Z9W9Jazjan/1g/WYrAKtE5gexy/0v+dEUFe4uTdVUNqNgovwR7rGfMzRwFcFoNgUEVdadRShlfq2LqzwYBtcwlWxrkeDVxHbvGsdrk/FY447bbXW6RYh6bGqAPXadRPwrItfqZgkzYkx6ruy7BbI7/iEDZjj0ZLwW1Tt98ouDPoiaS7bdNG/soy9xWOc3oSCVUWxD9OpVSnj1p2LcMg8eUn2WG0zQWliKiBEeY09XOgkECsb6ZFvJKz5Y+WjlBz/0lfMheSRJ4E3uX98vLuDieUUKMtAH/qg0cXTMbXecLeH8mvYJel76OhTd22onCBX6yZHD0RJgWRtO73ZG94gqdnpxDnnUN7/l2yGgCSLpX0UG9Rn+/G9ElX4ZWPLRbVA3Qgwx31hrZ73Gh7X3NG5swasZo/uOV4L2bo0icWaAkKHqHnKtkhX8AvEdATb5z/hluIKm8A4phx/l7u2CFg7RWjN/x72ckyjARZ+sxVBX3LJ8wiDb0qj75uwWccSOEKO18W65I5bqGRdlCYz78thZh9roWxAwv8u4jJeX0/RnE6AQyihGQcdzUYcAk/wcARzUUk/Bf7s0QJP5ZL8ki3HTQ+NWPTXAU+KjvR/3HN5SI5pogq49djX2EWRxrnLdYm2HlIXgLqk7pI3lsEvSMQwPcUSDRwU7n/6stWQiwgRbEaXnuGAQRAaogI2/vLSlCbkSAk65GOECMjWCU7Zy1moIYcDhy67GGPYqk31ov8myvIa0FD+hAu/Lqxj7GFj+hDKvIAk9RPyCZ0G7Z4pZOFmLcsnX3MkbbGcD4KEcL33ykKNN32ZWkt13Uoc3uvurRnW4lS78SV8cxVzGdLeu0SgReB/SZ7/SKIvYHZCD0+7jpY8qkQv/8cQUMKJQ879SzGm+OwPIKzIymtr1OL20SiFvA7vBuxCeKvTWlLLydQ2fmQ4O4Rmidc+hkXmO8bPCAatM53kiFqh/nVCIocCVkw4muQopQpob/dVfMRFWzZKbRljk8QpS3fU+eWaFTKP4Vb7zO4m+mfD5RO2uCsqGCK5WOj/DxN9GUy65QVpOgp5Y4cB7FgJXtyn0xNRwLsFo3c1zKdCxTkLitS/LzIGZSfs3cvZW2C8XmuhMmqFgBuUaNYr9o7o5z8oMdDUgihd9e6l7UI8RZhUBIjTK/Xwb2f31qFNiwj5Ph09zHu1lcR5znK6oL/lxNzrX9oUWNGL8fx86uXfT8JRi/I98OKKZkmhcnTefmawlZfDXnzwtQMEPdwa2ADMDbSACUB4VgfBjTZ9/InTwY31+M7oDAVxNcf6S6cC9cVWLz+44ZsM0XUf5BEQ2fPOrzqC276UUKOTcp8b1ADq4xZhxWBa+NM+EUwB/TprTHi7TJEdmJw0yD4WI3tGMo2OdX+LxspuudxoYc8yXtYYrxsYc15hHzkMWjFikb6cB7YOBEzlH6R549hwjXyBxcfi/EUsrHx8mdKOXdVVhMYeM3u9Xk/J6aIeQAij+AVvh809dd36uGZb3yN8AJHM7qCHSGChA9CWO9oKmtygdGfTQqD31SHN+bzY6wM/jF+GiuZaW/wbLG4w30BwZfCUL26WvSiVVbYqlfoEdpXC5tS2kZzoGuiE1lkmBWfEiQczFVA==",
+  "notes": "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",
   "days": {
     "2026-11-18": {
       "minutes": 35,
@@ -242,7 +247,12 @@ dialog h3{margin:0 0 12px;font-size:16px}
     },
     "2026-11-20": {
       "minutes": 82,
+      "backfill": false,
       "updated": "2026-11-20T17:00:22.573Z"
+    },
+    "2026-11-23": {
+      "minutes": 63,
+      "updated": "2026-11-23T16:18:20.485Z"
     }
   }
 }
