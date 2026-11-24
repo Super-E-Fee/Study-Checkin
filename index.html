@@ -96,6 +96,11 @@ dialog h3{margin:0 0 12px;font-size:16px}
     outline: 2px solid black !important;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5) !important;
   }
+</style><style>
+  .imageye-selected {
+    outline: 2px solid black !important;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5) !important;
+  }
 </style></head>
 <body>
 <div class="wrap">
@@ -116,21 +121,21 @@ dialog h3{margin:0 0 12px;font-size:16px}
     <div class="row between">
       <div>
         <div class="muted small">总计时长</div>
-        <div class="big num"><span id="totalH">4.2</span><small>小时</small></div>
+        <div class="big num"><span id="totalH">4.6</span><small>小时</small></div>
       </div>
       <div style="text-align:right">
         <div class="muted small">目标 3000 小时</div>
-        <div class="num" id="goalRight" style="font-size:15px">还差 2995.8 小时</div>
+        <div class="num" id="goalRight" style="font-size:15px">还差 2995.4 小时</div>
       </div>
     </div>
-    <div class="bar" style="margin:14px 0 10px"><i id="barFill" style="width: 0.14%;"></i></div>
+    <div class="bar" style="margin:14px 0 10px"><i id="barFill" style="width: 0.15%;"></i></div>
     <div class="row between small muted">
-      <span id="paceLine">近 30 天日均 8 分钟</span>
-      <span id="projLine">按这个节奏，看不到头</span>
+      <span id="paceLine">近 30 天日均 9 分钟</span>
+      <span id="projLine">按这个节奏，2080-03-11 达成</span>
     </div>
     <div class="row" style="margin-top:12px;gap:8px">
-      <span class="chip" id="chipDays">4 天</span>
-      <span class="chip" id="chipStreak">连续 1 天</span>
+      <span class="chip" id="chipDays">5 天</span>
+      <span class="chip" id="chipStreak">连续 2 天</span>
       <span class="chip" id="chipBest">最长 3 天</span>
     </div>
   </section>
@@ -138,7 +143,7 @@ dialog h3{margin:0 0 12px;font-size:16px}
   <section class="card">
     <div class="row between">
       <div>
-        <div class="muted small" id="todayLabel">2026-11-24 周二</div>
+        <div class="muted small" id="todayLabel">2026-11-25 周三</div>
         <div class="timer idle" id="timer">00:00:00</div>
       </div>
       <div class="row" style="gap:8px">
@@ -193,8 +198,8 @@ dialog h3{margin:0 0 12px;font-size:16px}
 </div>
 
 <dialog id="dlgIn">
-  <h3 id="dlgInTitle">记录 2026-11-23</h3>
-  <div class="hint" id="dlgInSub">本次 1 时 3 分 ｜ 写一句今天学了什么，不写也行</div>
+  <h3 id="dlgInTitle">记录 2026-11-24</h3>
+  <div class="hint" id="dlgInSub">本次 28 分 ｜ 写一句今天学了什么，不写也行</div>
   <textarea id="dlgInNote" placeholder="今天学了什么？卡在哪？"></textarea>
   <div class="row" style="justify-content:flex-end;gap:8px;margin-top:14px">
     <button class="btn ghost" id="dlgInCancel">取消</button>
@@ -231,9 +236,9 @@ dialog h3{margin:0 0 12px;font-size:16px}
   "crypto": {
     "kdf": "PBKDF2-SHA256",
     "iter": 210000,
-    "salt": "qE4M/t9TP3YnTl7udmtkVA=="
+    "salt": "9nMYoETbYDg1f+E3RglBRg=="
   },
-  "notes": "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",
+  "notes": "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",
   "days": {
     "2026-11-18": {
       "minutes": 35,
@@ -252,7 +257,12 @@ dialog h3{margin:0 0 12px;font-size:16px}
     },
     "2026-11-23": {
       "minutes": 63,
+      "backfill": false,
       "updated": "2026-11-23T16:18:20.485Z"
+    },
+    "2026-11-24": {
+      "minutes": 28,
+      "updated": "2026-11-24T16:12:25.978Z"
     }
   }
 }
